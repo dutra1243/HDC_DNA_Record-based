@@ -1,2 +1,2 @@
-torchhd
-torch
+# torchhd
+torch==2.5.1

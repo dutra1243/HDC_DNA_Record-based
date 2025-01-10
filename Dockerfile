@@ -10,5 +10,9 @@ COPY src/ .
 # Install any dependencies specified in requirements.txt
 # RUN pip install -r requirements.txt
 
+RUN pip install --default-timeout=10000 torch-hd
+
+RUN pip install --default-timeout=10000 torch
+
 # Command to run the application
 CMD ["python", "app.py"]
