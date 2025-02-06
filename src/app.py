@@ -41,16 +41,21 @@ class someMethods:
         torch.save(hypervector, fileName)
 
     def generateHypervector(dimensions, fileName):
-        hv = torchhd.random(1, dimensions)
+        hv = torchhd.random(1, dimensions, "BSC")
         torch.save(hv, fileName)
-        return 
+        return hv
     
     def generateHypervectorIDs(amount , dimensions, fileName):
-        hvs = torchhd.random(amount, dimensions)
+        hvs = torchhd.random(amount, dimensions, "BSC")
         torch.save(hvs, fileName)
         return hvs
     
-
+    def bundling(hv1, hv2):
+        return torch.bitwise_or(hv1, hv2)
+    
+    def binding(hv1, hv2):
+        return torch.bitwise_xor(hv1, hv2)
+    
 
 # load the hypervectors
 try:
@@ -74,6 +79,9 @@ except Exception as e:
 
 
 testList = ["ACAGTACAGT", "ACAGTCCAGT", "AAAGTCCAGT"]
+# testList = ["ATGACCATGATTACGGATTCACTGGCCGTCGTTTTACAACGTCGTGACTGGGAAAACCCTGGCGTTACCCAACTTAATCGCCTTGCAGCACATCCCCCTTTCGCCAGCTGGCGTAATAGCGAAGAGGCCCGCACCGATCGCCCTTCCCAACAGTTGCGCAGCCTGAATGGCGAATGGCGCTTTGCACCAATAACTGCCTTGCGGGCGTGGCAGCATAAAGTGTAAAGCCTGGGGTGCCTAATGAGTGAGCTAACTCACATAAACGCGCTGATTTATCGGCTGGCTGGTTTATTGCTGATGGTGCTGCTGCCAGGATGTTGCCATTGCTGTGGAAGCTGCCTGCACTGCCCGCTTTCCAGTCGGGAAACCTGTCGTGCCAGCTGCATAACGCGGCGGTTTGTTCCCACCGAT",
+#             "ATGACCATGATTACGGATTCACTGGCCGTCGTTTTACAACGTCGTGACTGGGAAAACCCTGGCGTTACCCAACTTAATCGCCTTGCAGCACATCCCCCTTTCGCCAGCTGGCGTAATAGCGAAGAGGCCCGCACCGATCGCCCTTCCCAACAGTTGCGCAGCCTGAATGGCGAATGGCGCTTTGCACCAATAACTGCCTTGCGGGCGTGGCAGCATAAAGTGTAAAGCCTGGGGTGCCTAATGAGTGAGCTAACTCACATAAACGCGCTGATTTATCGGCTGGCTGGTTTATTGCTGATGGTGCTGCTGCCAGGATGTTGCCATTGCTGTGGAAGCTGCCTGCACTGCCCGCTTTCCAGTTGGGAAACCTGTCGTGCCAGCTGCATAACGCGGCGGTTTGTTCCCACCGAT",
+#             "ATGACCATGATTACGGATTCACTGGCCGTCGTTTTACAACGTCGTGACTGGGAAAACCCTGGCGTTACCCAACTTAATCGCCTTGCAGCACATCCCCCTTTCGCCAGCTGGCGTAATAGCGAAGAGGCCCGCACCGATCGCCCTTCCCAACAGTTGCGCAGCCTGAATGGCGAATGGCGCTTTGCACCAATAACTGCCTTGCGGGCGTGGCAGCATAAAGTGTAAAGCCTGGGGTGCCTAATGAGTGAGCTAACTCACATAAACGCGCTGATTTATCGGCTGGCTG---GTTTATTGCTGATGGTGCTGCTGCCAGGATGTTGCCATTGCTGTGGAAGCTGCCTGCACTGCCCGCTTTCCAGTTCGGGAAACCTGTCGTGGGCCAGCTGCATAA-CGCGGCGGTTTGTTCCCACCGAT"]
 
 largestString = 0
 
@@ -85,6 +93,15 @@ print("Largest string: ", largestString)
 
 IDs = someMethods.generateHypervectorIDs(largestString, dimensions, "IDs.pt")
 
+print(nucleotide_A)
+print(nucleotide_C)
+print(nucleotide_G)
+print(nucleotide_T)
+
+
+print("IDs: ", IDs)
+print("IDs[0] : ", IDs[0])
+
 # list of hypervectors for each DNA sequence
 testResults = []
 
@@ -93,40 +110,41 @@ for DNA_SEQUENCE in testList:
     print("DNA_SEQUENCE: ", DNA_SEQUENCE)
 
     if DNA_SEQUENCE[0] == "A":
-        firstLetter = torchhd.bind(nucleotide_A, IDs[0])
+        firstLetter = someMethods.binding(nucleotide_A, IDs[0])
     elif DNA_SEQUENCE[0] == "C":
-        firstLetter = torchhd.bind(nucleotide_C, IDs[0])
+        firstLetter = someMethods.binding(nucleotide_C, IDs[0])
     elif DNA_SEQUENCE[0] == "G":
-        firstLetter = torchhd.bind(nucleotide_G, IDs[0])
+        firstLetter = someMethods.binding(nucleotide_G, IDs[0])
     elif DNA_SEQUENCE[0] == "T":
-        firstLetter = torchhd.bind(nucleotide_T, IDs[0])
+        firstLetter = someMethods.binding(nucleotide_T, IDs[0])
     else:
-        firstLetter = torchhd.bind(specialChar, IDs[0])
+        firstLetter = someMethods.binding(specialChar, IDs[0])
 
     if DNA_SEQUENCE[1] == "A":
-        nextLetter = torchhd.bind(nucleotide_A, IDs[1])
+        nextLetter = someMethods.binding(nucleotide_A, IDs[1])
     elif DNA_SEQUENCE[1] == "C":
-        nextLetter = torchhd.bind(nucleotide_C, IDs[1])
+        nextLetter = someMethods.binding(nucleotide_C, IDs[1])
     elif DNA_SEQUENCE[1] == "G":
-        nextLetter = torchhd.bind(nucleotide_G, IDs[1])
+        nextLetter = someMethods.binding(nucleotide_G, IDs[1])
     elif DNA_SEQUENCE[1] == "T":
-        nextLetter = torchhd.bind(nucleotide_T, IDs[1])
+        nextLetter = someMethods.binding(nucleotide_T, IDs[1])
     else:
-        nextLetter = torchhd.bind(specialChar, IDs[1])
-    sequenceHyperVector = torchhd.bundle(firstLetter, nextLetter)
+        nextLetter = someMethods.binding(specialChar, IDs[1])
+    sequenceHyperVector = someMethods.bundling(firstLetter, nextLetter)
 
     for i in range(2, len(DNA_SEQUENCE)):
         if DNA_SEQUENCE[i] == "A":
-            nextLetter = torchhd.bind(nucleotide_A, IDs[i])
+            nextLetter = someMethods.binding(nucleotide_A, IDs[i])
         elif DNA_SEQUENCE[i] == "C":
-            nextLetter = torchhd.bind(nucleotide_C, IDs[i])
+            nextLetter = someMethods.binding(nucleotide_C, IDs[i])
         elif DNA_SEQUENCE[i] == "G":
-            nextLetter = torchhd.bind(nucleotide_G, IDs[i])
+            nextLetter = someMethods.binding(nucleotide_G, IDs[i])
         elif DNA_SEQUENCE[i] == "T":
-            nextLetter = torchhd.bind(nucleotide_T, IDs[i])
+            nextLetter = someMethods.binding(nucleotide_T, IDs[i])
         else:
-            nextLetter = torchhd.bind(firstLetter, specialChar)
-        sequenceHyperVector = torchhd.bundle(sequenceHyperVector, nextLetter)
+            nextLetter = someMethods.binding(specialChar, IDs[i])
+        sequenceHyperVector = someMethods.bundling(sequenceHyperVector, nextLetter)
+    
     testResults.append(sequenceHyperVector)
 
 print("Test results: ", testResults)
@@ -137,5 +155,5 @@ for i in range(len(testResults)):
     string += testList[i] + " "
     for j in range(len(testResults)):
         string += f"{(torchhd.hamming_similarity(testResults[i], testResults[j]))}" + 10*" "
-
+    string += "\n"
 print(string)
