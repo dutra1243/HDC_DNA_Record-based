@@ -67,13 +67,13 @@ class someMethods:
 
 # load the hypervectors
 try:
-    print("Loading hypervectors")
+    print("\nLoading hypervectors")
     nucleotide_A = someMethods.loadHypervector("nucleotide_A.pt")
     nucleotide_C = someMethods.loadHypervector("nucleotide_C.pt")
     nucleotide_G = someMethods.loadHypervector("nucleotide_G.pt")
     nucleotide_T = someMethods.loadHypervector("nucleotide_T.pt")
     specialChar = someMethods.loadHypervector("specialChar.pt")
-    print("Hypervectors loaded")
+    print("Hypervectors loaded\n")
 except Exception as e:
     print("Error loading hypervectors")
     print(e)
@@ -83,7 +83,7 @@ except Exception as e:
     nucleotide_G = someMethods.generateHypervector(dimensions, "nucleotide_G.pt")
     nucleotide_T = someMethods.generateHypervector(dimensions, "nucleotide_T.pt")
     specialChar = someMethods.generateHypervector(dimensions, "specialChar.pt")
-    print("Hypervectors generated and saved")
+    print("Hypervectors generated and saved\n")
 
 
 testList = ["ACAGTACAGT", "ACAGTCCAGT", "AAAGTCCAGT"]
@@ -97,18 +97,7 @@ for test in testList:
     if len(test) > largestString:
         largestString = len(test)
 
-print("Largest string: ", largestString)
-
 IDs = someMethods.generateHypervectorIDs(largestString, dimensions, "IDs.pt")
-
-print(nucleotide_A)
-print(nucleotide_C)
-print(nucleotide_G)
-print(nucleotide_T)
-
-
-print("IDs: ", IDs)
-print("IDs[0] : ", IDs[0])
 
 # list of hypervectors for each DNA sequence
 testResults = []
@@ -157,12 +146,16 @@ for DNA_SEQUENCE in testList:
 
 print("Test results: ", testResults)
 
-string = 10*" " + " ACAGTACAGT ACAGTCCAGT AAAGTCCAGT\n"
+string = ""
 
 for i in range(len(testResults)):
-    string += testList[i] + " "
+    if len(testList[i]) <= 15:
+        string += f"[{testList[i]}]" + f" ({i}) | "
+    else:
+        shortSequence = testList[i][:5] + " ... " + testList[i][-5:]
+        string += f"[{shortSequence}]" + f" ({i}) | "
     for j in range(len(testResults)):
-        string += f"{(torchhd.hamming_similarity(testResults[i], testResults[j]))}" + 10*" "
+        string += f"-> ({j}) {(torchhd.hamming_similarity(testResults[i], testResults[j]))}" + " | "
     string += "\n"
 print(string)
 
