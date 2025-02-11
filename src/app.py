@@ -27,12 +27,20 @@ ATGACCATGATTACGGATTCACTGGCCGTCGTTTTACAACGTCGTGACTGGGAAAACCCTGGCGTTACCCAACTTAATCG
 
 import torchhd
 import torch
+import os
 from variables import dimensions
 
 class someMethods:
     def __init__(self):
         pass
 
+    def deleteHypervector(fileName):
+        try:
+            os.remove(fileName)
+            print(f"{fileName} deleted")
+        except Exception as e:
+            print("Error deleting file")
+            print(e)
 
     def loadHypervector(fileName):
         return torch.load(fileName)
@@ -157,3 +165,5 @@ for i in range(len(testResults)):
         string += f"{(torchhd.hamming_similarity(testResults[i], testResults[j]))}" + 10*" "
     string += "\n"
 print(string)
+
+someMethods.deleteHypervector("IDs.pt")
