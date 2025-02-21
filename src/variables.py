@@ -1,1 +1,1 @@
-dimensions = 10000 # 10.000
+dimensions = 100000 # 10.000
